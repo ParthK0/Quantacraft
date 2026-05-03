@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-outfit);
+  --font-pixel: var(--font-vt323);
+
+  --color-minecraft-green: #55FF55;
+  --color-minecraft-dirt: #795548;
+  --color-minecraft-stone: #808080;
+  --color-minecraft-gold: #FFD700;
+  --color-minecraft-blue: #5555FF;
+}
+
+:root {
+  --background: #000000;
+  --foreground: #ffffff;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+@layer components {
+  .pixel-border {
+    @apply border-4 border-white shadow-[4px_4px_0px_0px_rgba(255,255,255,0.2)];
+  }
+  
+  .pixel-text {
+    @apply font-pixel;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #444;
+}
