@@ -32,8 +32,10 @@ const tracks = [
 
 export default function Tracks() {
   return (
-    <section id="tracks" className="py-32 px-4 max-w-7xl mx-auto">
-      <h2 className="text-4xl font-pixel text-center mb-20">HACKATHON TRACKS</h2>
+    <section id="tracks" className="py-32 px-4 max-w-7xl mx-auto overflow-visible">
+      <div className="text-center mb-24 pt-20">
+        <h2 data-corner-text="Pick Your Path">HACKATHON TRACKS</h2>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {tracks.map((track, i) => (
           <motion.div

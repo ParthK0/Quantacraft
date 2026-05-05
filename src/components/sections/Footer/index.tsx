@@ -1,6 +1,6 @@
 "use client";
 
-import { Mail, Phone, MapPin, Globe, Github, Linkedin } from "lucide-react";
+import { Mail, Phone, MapPin, Globe, CodeXml, Link as LinkIcon } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -36,10 +36,10 @@ export default function Footer() {
                 <Globe className="w-5 h-5" />
               </a>
               <a href="#" className="p-3 bg-zinc-900 rounded-full hover:bg-minecraft-green hover:text-black transition-all">
-                <Github className="w-5 h-5" />
+                <CodeXml className="w-5 h-5" />
               </a>
               <a href="#" className="p-3 bg-zinc-900 rounded-full hover:bg-minecraft-green hover:text-black transition-all">
-                <Linkedin className="w-5 h-5" />
+                <LinkIcon className="w-5 h-5" />
               </a>
             </div>
           </div>

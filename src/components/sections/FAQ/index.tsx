@@ -33,8 +33,10 @@ const faqs = [
 
 export default function FAQ() {
   return (
-    <section id="faq" className="py-32 px-4 max-w-3xl mx-auto">
-      <h2 className="text-4xl font-pixel text-center mb-20">COMMAND CENTER (FAQ)</h2>
+    <section id="faq" className="py-32 px-4 max-w-3xl mx-auto overflow-visible">
+      <div className="text-center mb-24 pt-20">
+        <h2 data-corner-text="Help Center">COMMAND CENTER (FAQ)</h2>
+      </div>
       <div className="space-y-4">
         {faqs.map((faq, i) => (
           <FAQItem key={i} faq={faq} />
