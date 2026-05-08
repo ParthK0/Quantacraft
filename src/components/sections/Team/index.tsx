@@ -2,7 +2,6 @@
 
 import { useRef, useCallback, useEffect, useState } from "react";
 import Image from "next/image";
-import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import MinecraftProfileCard from "@/components/ui/MinecraftProfileCard";
 import SectionHeader from "@/components/ui/SectionHeader";
@@ -202,8 +201,8 @@ const AUTO_ADVANCE_INTERVAL = 3000; // Auto-advance to next card every 3 seconds
 export default function Team() {
   const trackRef = useRef<HTMLDivElement>(null);
   const autoAdvanceTimer = useRef<NodeJS.Timeout | null>(null);
-  const paused = useRef(false);   // true while hovered or mid-arrow-click
-  const nudging = useRef(false);   // true while smooth-scrolling an arrow
+  const isPaused = useRef(false);
+  const isScrolling = useRef(false);
 
   const [dim, setDim] = useState({ cardW: 260, gap: 24, cardH: 540 });
   const step = dim.cardW + dim.gap;
@@ -246,27 +245,32 @@ export default function Team() {
   // ── Infinite-wrap helper ──────────────────────────────────────────────────
   const wrapIfNeeded = useCallback(() => {
     const el = trackRef.current;
-    if (!el) return;
+    if (!el || isScrolling.current) return;
+    
     const midStart = team.length * step;
     const midEnd = midStart + team.length * step;
-    if (el.scrollLeft < step * 2) el.scrollLeft += team.length * step;
-    else if (el.scrollLeft >= midEnd - step * 2) el.scrollLeft -= team.length * step;
+    
+    // Instant jump without animation when reaching boundaries
+    if (el.scrollLeft < step) {
+      el.scrollLeft += team.length * step;
+    } else if (el.scrollLeft >= midEnd - step) {
+      el.scrollLeft -= team.length * step;
+    }
   }, [step]);
 
-  // ── Auto-advance to next card ─────────────────────────────────────────────
-  const advanceToNext = useCallback(() => {
+  // ── Smooth scroll helper ──────────────────────────────────────────────────
+  const smoothScroll = useCallback((direction: number) => {
     const el = trackRef.current;
-    if (!el) return;
-    if (paused.current) return;
-    if (nudging.current) return;
+    if (!el || isScrolling.current) return;
     
-    nudging.current = true;
-    el.scrollBy({ left: step, behavior: "smooth" });
+    isScrolling.current = true;
+    el.scrollBy({ left: direction * step, behavior: "smooth" });
     
+    // Wait for scroll to complete, then check wrap
     setTimeout(() => {
-      nudging.current = false;
+      isScrolling.current = false;
       wrapIfNeeded();
-    }, 520);
+    }, 400);
   }, [step, wrapIfNeeded]);
 
   // ── Auto-advance timer ────────────────────────────────────────────────────
@@ -274,96 +278,39 @@ export default function Team() {
     const el = trackRef.current;
     if (!el) return;
 
-    // Start at middle copy - centered
-    const initialScroll = team.length * step;
-    el.scrollLeft = initialScroll;
-
-    let currentIndex = team.length; // Start at middle copy
+    // Start at middle copy
+    el.scrollLeft = team.length * step;
 
     // Set up auto-advance interval
     const intervalId = setInterval(() => {
-      const element = trackRef.current;
-      if (!element) return;
-      if (paused.current) return;
-      if (nudging.current) return;
-      
-      nudging.current = true;
-      currentIndex++;
-      
-      // Calculate exact scroll position to center the card
-      const targetScroll = currentIndex * step;
-      element.scrollTo({ left: targetScroll, behavior: "smooth" });
-      
-      setTimeout(() => {
-        nudging.current = false;
-        wrapIfNeeded();
-        
-        // Update index after wrap
-        if (element.scrollLeft < step * 2) {
-          currentIndex += team.length;
-        } else if (element.scrollLeft >= (team.length * 2) * step - step * 2) {
-          currentIndex -= team.length;
-        }
-      }, 520);
+      if (isPaused.current || isScrolling.current) return;
+      smoothScroll(1);
     }, AUTO_ADVANCE_INTERVAL);
     
     autoAdvanceTimer.current = intervalId;
 
     return () => {
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
+      if (intervalId) clearInterval(intervalId);
     };
-  }, [step, wrapIfNeeded]);
+  }, [step, smoothScroll]);
 
   // ── Arrow buttons ─────────────────────────────────────────────────────────
   const scroll = useCallback((dir: "left" | "right") => {
-    const el = trackRef.current;
-    if (!el) return;
-    
-    // Reset auto-advance timer when user manually navigates
+    // Reset auto-advance timer on manual navigation
     if (autoAdvanceTimer.current) {
       clearInterval(autoAdvanceTimer.current);
       autoAdvanceTimer.current = setInterval(() => {
-        const element = trackRef.current;
-        if (!element) return;
-        if (paused.current) return;
-        if (nudging.current) return;
-        
-        nudging.current = true;
-        element.scrollBy({ left: step, behavior: "smooth" });
-        
-        setTimeout(() => {
-          nudging.current = false;
-          wrapIfNeeded();
-        }, 520);
+        if (isPaused.current || isScrolling.current) return;
+        smoothScroll(1);
       }, AUTO_ADVANCE_INTERVAL);
     }
     
-    nudging.current = true;
-    
-    // Calculate current card index
-    const currentScroll = el.scrollLeft;
-    const currentIndex = Math.round(currentScroll / step);
-    const targetIndex = dir === "left" ? currentIndex - 1 : currentIndex + 1;
-    const targetScroll = targetIndex * step;
-    
-    el.scrollTo({ left: targetScroll, behavior: "smooth" });
-    
-    setTimeout(() => {
-      nudging.current = false;
-      wrapIfNeeded();
-    }, 520);
-  }, [wrapIfNeeded, step]);
+    smoothScroll(dir === "left" ? -1 : 1);
+  }, [smoothScroll]);
 
   // ── Pause/resume on hover ─────────────────────────────────────────────────
-  const pause = useCallback(() => { paused.current = true; }, []);
-  const resume = useCallback(() => { paused.current = false; }, []);
-
-  // handleScroll kept for the native scroll event (warp only when arrow-nudge done)
-  const handleScroll = useCallback(() => {
-    if (!nudging.current) wrapIfNeeded();
-  }, [wrapIfNeeded]);
+  const pause = useCallback(() => { isPaused.current = true; }, []);
+  const resume = useCallback(() => { isPaused.current = false; }, []);
 
   return (
     <section id="team" className="py-12 bg-zinc-900 overflow-hidden relative">
@@ -434,29 +381,24 @@ export default function Team() {
         {/* Scrollable track with smooth card transitions */}
         <div
           ref={trackRef}
-          onScroll={handleScroll}
           className="flex items-center overflow-x-auto no-scrollbar gap-[60px] md:gap-6 pb-10 pt-4"
           style={{ 
             scrollBehavior: "smooth",
             paddingLeft: `calc(50% - ${dim.cardW / 2}px)`,
-            paddingRight: `calc(50% - ${dim.cardW / 2}px)`
+            paddingRight: `calc(50% - ${dim.cardW / 2}px)`,
+            WebkitOverflowScrolling: "touch"
           }}
         >
           {looped.map((member, i) => (
-            <motion.div
+            <div
               key={i}
-              className="group relative shrink-0"
+              className="group relative shrink-0 opacity-0 animate-fade-in-scale"
               style={{ 
                 width: dim.cardW, 
                 aspectRatio: "3/4", 
-                height: dim.cardH
-              }}
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: false, margin: "-20%" }}
-              transition={{ 
-                duration: 0.4,
-                ease: [0.25, 0.46, 0.45, 0.94]
+                height: dim.cardH,
+                animationDelay: `${(i % team.length) * 0.05}s`,
+                animationFillMode: "forwards"
               }}
             >
               <MinecraftProfileCard
@@ -472,7 +414,7 @@ export default function Team() {
                 instagramUrl={member.social.instagram}
                 theme={member.squad === "Operations Squad" ? "orange-gold" : "blue-green"}
               />
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>

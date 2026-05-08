@@ -1171,6 +1171,18 @@ h2::after {
   pointer-events: none;
 }
 
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+/* Sponsor float animation - desktop only */
+@media (min-width: 768px) {
+  .animate-float {
+    animation: float 4s ease-in-out infinite;
+  }
+}
+
 /* ── Minecraft Java Edition Loading Screen ── */
 .loading-screen {
   position: fixed;
@@ -1273,7 +1285,7 @@ h2::after {
 @keyframes fadeInScale {
   from {
     opacity: 0;
-    transform: scale(0.9);
+    transform: scale(0.95);
   }
   to {
     opacity: 1;
@@ -1305,17 +1317,17 @@ h2::after {
 
 /* Utility classes for CSS animations */
 .animate-fade-in-up {
-  animation: fadeInUp 0.8s ease-out forwards;
+  animation: fadeInUp 0.6s ease-out forwards;
 }
 
 .animate-fade-in-scale {
-  animation: fadeInScale 0.8s ease-out forwards;
+  animation: fadeInScale 0.5s ease-out forwards;
 }
 
 .animate-slide-in-left {
-  animation: slideInLeft 1s ease-out forwards;
+  animation: slideInLeft 0.8s ease-out forwards;
 }
 
 .animate-slide-in-right {
-  animation: slideInRight 1s ease-out forwards;
+  animation: slideInRight 0.8s ease-out forwards;
 }

@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import SectionHeader from "@/components/ui/SectionHeader";
+import OptimizedImage from "@/components/OptimizedImage";
 
 const goldenSponsors = [
   { name: "Golden Sponsor 1", logo: "/assets/sponsor/Golden Sponsor 1.png", scale: 1.1 },
@@ -24,46 +25,37 @@ function SponsorCard({ sponsor, tier, index }: SponsorCardProps) {
 
   // Minecraft Pixel Palette
   const colors = isGolden ? {
-    primary: "#f7e34d",    // Minecraft Gold
-    dark: "#b59a24",       // Gold Shadow
-    light: "#fff9ab",      // Gold Highlight
-    glow: "rgba(247, 227, 77, 0.3)"
+    primary: "#f7e34d",
+    dark: "#b59a24",
+    light: "#fff9ab",
+    glow: "rgba(247, 227, 77, 0.15)" // Reduced opacity
   } : {
-    primary: "#c46c3d",    // Minecraft Copper/Bronze
-    dark: "#8c4d2d",       // Copper Shadow
-    light: "#e8a685",      // Copper Highlight
-    glow: "rgba(196, 108, 61, 0.2)"
+    primary: "#c46c3d",
+    dark: "#8c4d2d",
+    light: "#e8a685",
+    glow: "rgba(196, 108, 61, 0.1)" // Reduced opacity
   };
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay: index * 0.1 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ delay: index * 0.1, duration: 0.5 }}
       className="relative group"
     >
-      <motion.div
-        animate={{
-          y: [0, -12, 0],
-          rotate: [0, 0, 0, 0, 0]
-        }}
-        transition={{
-          duration: 4 + (index % 3),
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-      >
-        {/* Background Glow */}
+      {/* Simplified - removed continuous animation on mobile */}
+      <div className="md:animate-float">
+        {/* Background Glow - Reduced blur */}
         <div
-          className="absolute inset-[-30px] rounded-full blur-[50px] opacity-100 z-0"
+          className="absolute inset-[-20px] rounded-full blur-[30px] opacity-80 z-0"
           style={{ backgroundColor: colors.glow }}
         />
 
         <div className="w-40 h-40 md:w-64 md:h-64 relative flex items-center justify-center">
           {/* Pixelated Frame Container */}
           <div className="absolute inset-0 z-20 pointer-events-none">
-            {/* Outer Dark Rim (Pixel Effect) */}
+            {/* Outer Dark Rim */}
             <div className="absolute inset-0 border-[4px] border-black/40" />
 
             {/* Main Frame Body */}
@@ -82,7 +74,7 @@ function SponsorCard({ sponsor, tier, index }: SponsorCardProps) {
               style={{ borderColor: colors.dark }}
             />
 
-            {/* Corner Pixel Blocks (Instead of nails) */}
+            {/* Corner Pixel Blocks */}
             <div className="absolute top-0 left-0 w-4 h-4 bg-black/60" />
             <div className="absolute top-0 right-0 w-4 h-4 bg-black/60" />
             <div className="absolute bottom-0 left-0 w-4 h-4 bg-black/60" />
@@ -93,40 +85,44 @@ function SponsorCard({ sponsor, tier, index }: SponsorCardProps) {
             <div className="absolute bottom-4 right-4 w-2 h-2 bg-black/20" />
           </div>
 
-          {/* Inner Texture / Backdrop */}
-          <img
+          {/* Inner Texture / Backdrop - Lazy loaded */}
+          <OptimizedImage
             src="/assets/sponsor/sponsor back.png"
             alt="Sponsor Backdrop"
+            fill
             className="absolute inset-[12px] w-[calc(100%-24px)] h-[calc(100%-24px)] object-cover z-10 brightness-[0.9] group-hover:brightness-110 transition-all duration-300"
+            priority={false}
           />
 
-          {/* Sponsor Logo */}
+          {/* Sponsor Logo - Lazy loaded */}
           <div className="absolute inset-[12px] z-30 flex items-center justify-center p-8">
-            <img
-              src={sponsor.logo}
-              alt={sponsor.name}
-              style={{ transform: `scale(${sponsor.scale || 1})` }}
-              className="max-w-full max-h-full object-contain filter drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)] group-hover:scale-110 transition-transform duration-300"
-            />
+            <div style={{ transform: `scale(${sponsor.scale || 1})` }} className="transition-transform duration-300 group-hover:scale-110">
+              <OptimizedImage
+                src={sponsor.logo}
+                alt={sponsor.name}
+                width={200}
+                height={200}
+                className="max-w-full max-h-full object-contain filter drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]"
+                priority={false}
+              />
+            </div>
           </div>
         </div>
-      </motion.div>
+      </div>
     </motion.div>
   );
 }
 
 export default function Sponsors() {
   return (
-    <section id="sponsors" className="py-20 px-4 relative overflow-hidden bg-[#0a0a0a]">
-      {/* Background Image - Restored visibility */}
-      <img
-        src="/assets/sponsor/sponsor.jpg"
-        alt="Sponsors Backdrop"
-        className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none opacity-80"
-      />
-
+    <section id="sponsors" className="py-20 px-4 relative overflow-hidden" style={{
+      backgroundImage: 'url(/assets/sponsor/sponsor.jpg)',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat'
+    }}>
       {/* Subtle Overlays */}
-      <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black/80 z-[1] pointer-events-none" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60 z-[1] pointer-events-none" />
 
       <SectionHeader 
         title="OUR SPONSORS" 
@@ -153,9 +149,9 @@ export default function Sponsors() {
         </div>
       </div>
 
-      {/* Large Decorative Glows */}
-      <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[500px] h-[500px] bg-yellow-500/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-[500px] h-[500px] bg-orange-900/10 rounded-full blur-[120px] pointer-events-none" />
+      {/* Decorative Glows - Reduced blur and hidden on mobile */}
+      <div className="hidden md:block absolute top-1/2 left-1/4 -translate-y-1/2 w-[400px] h-[400px] bg-yellow-500/10 rounded-full blur-[80px] pointer-events-none" />
+      <div className="hidden md:block absolute top-1/2 right-1/4 -translate-y-1/2 w-[400px] h-[400px] bg-orange-900/10 rounded-full blur-[80px] pointer-events-none" />
     </section>
   );
 }

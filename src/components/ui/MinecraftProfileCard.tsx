@@ -1,6 +1,5 @@
 "use client";
 
-import { motion } from "framer-motion";
 import Image from "next/image";
 
 const LinkedinIcon = () => (
@@ -56,7 +55,7 @@ export default function MinecraftProfileCard({
   const squadColor = isOrange ? "#ffaa00" : "#55FF55";
 
   return (
-    <motion.div
+    <div
       className="profile-card wood-frame mx-auto"
       style={{
         background: bgGradient,
@@ -80,11 +79,9 @@ export default function MinecraftProfileCard({
           style={{ background: isOrange ? "#1a0a05" : "#05161a" }}
         >
           {/* Normal Image */}
-          <motion.div
-            initial={false}
-            animate={{ opacity: isMinecraft && minecraftImage ? 0 : 1 }}
-            transition={{ duration: 0.6, ease: "easeInOut" }}
-            className="absolute inset-0"
+          <div
+            className="absolute inset-0 transition-opacity duration-500 ease-in-out"
+            style={{ opacity: isMinecraft && minecraftImage ? 0 : 1 }}
           >
             <Image
               src={image}
@@ -95,15 +92,13 @@ export default function MinecraftProfileCard({
                 (e.currentTarget as HTMLImageElement).src = "https://minecraft.wiki/images/Steve_JE2_BE1.png";
               }}
             />
-          </motion.div>
+          </div>
 
           {/* Minecraft Image */}
           {minecraftImage && (
-            <motion.div
-              initial={false}
-              animate={{ opacity: isMinecraft ? 1 : 0 }}
-              transition={{ duration: 0.6, ease: "easeInOut" }}
-              className="absolute inset-0"
+            <div
+              className="absolute inset-0 transition-opacity duration-500 ease-in-out"
+              style={{ opacity: isMinecraft ? 1 : 0 }}
             >
               <Image
                 src={minecraftImage}
@@ -114,7 +109,7 @@ export default function MinecraftProfileCard({
                   (e.currentTarget as HTMLImageElement).src = "https://minecraft.wiki/images/Steve_JE2_BE1.png";
                 }}
               />
-            </motion.div>
+            </div>
           )}
         </div>
       </div>
@@ -220,6 +215,6 @@ export default function MinecraftProfileCard({
           )}
         </div>
       )}
-    </motion.div>
+    </div>
   );
 }
