@@ -38,6 +38,14 @@ const satisfy = Satisfy({
 export const metadata: Metadata = {
   title: "QuantCraft | Build. Solve. Conquer.",
   description: "Join QuantCraft, the ultimate hackathon at Galgotias University. AI/ML, Cyber Security, Blockchain, and Game Dev tracks.",
+  icons: {
+    icon: [
+      { url: "/icon.png", sizes: "any" },
+      { url: "/assets/main Logo.png", sizes: "512x512", type: "image/png" }
+    ],
+    apple: "/icon.png",
+    shortcut: "/icon.png"
+  },
 };
 
 import LoadingScreen from "@/components/LoadingScreen";
@@ -98,6 +106,14 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <head>
+        {/* PWA Manifest */}
+        <link rel="manifest" href="/manifest.json" />
+        {/* Theme color for mobile browsers */}
+        <meta name="theme-color" content="#00ffcc" />
+        {/* Apple Web App */}
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="QuantCraft" />
         {/* Preconnect to external resources for faster font loading */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
