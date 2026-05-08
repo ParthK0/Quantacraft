@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import "./LoadingScreen.css";
 
 const tips = [
@@ -15,64 +15,9 @@ const tips = [
   "The End is just a new beginning.",
 ];
 
-const GRID = 23;
-const CELL = 8;
-const GAP = 1;
-const SIZE = GRID * (CELL + GAP);
-
-function getSpiralOrder(size: number) {
-  const cells: [number, number][] = [];
-  const center = Math.floor(size / 2);
-  let x = 0, y = 0;
-  let dx = 0, dy = -1;
-  
-  for (let i = 0; i < size * size; i++) {
-    if (
-      -size / 2 < x && x <= size / 2 &&
-      -size / 2 < y && y <= size / 2
-    ) {
-      cells.push([center + x, center + y]);
-    }
-    if (x === y || (x < 0 && x === -y) || 
-        (x > 0 && x === 1 - y)) {
-      const temp = dx;
-      dx = -dy;
-      dy = temp;
-    }
-    x += dx;
-    y += dy;
-  }
-  return cells;
-}
-
-const getChunkColor = (col: number, row: number) => {
-  const center = Math.floor(GRID / 2);
-  const distToCenter = Math.max(Math.abs(col - center), Math.abs(row - center));
-  
-  // Special chunks (spawn area 5x5)
-  if (distToCenter <= 2) return "#fbbf24";
-  
-  // Random water chunks
-  const pseudoRandom = Math.sin(col * 12.9898 + row * 78.233) * 43758.5453;
-  const rand = pseudoRandom - Math.floor(pseudoRandom);
-  
-  if (rand > 0.85) return "#1a3a6a";
-  
-  // Standard terrain color
-  // Base: #2d5a2d
-  // Random variation
-  const variation = Math.floor((rand * 20) - 10);
-  const r = Math.max(0, 45 + variation);
-  const g = Math.max(0, 90 + variation);
-  const b = Math.max(0, 45 + variation);
-  
-  return `rgb(${r}, ${g}, ${b})`;
-};
-
 export default function LoadingScreen() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [progress, setProgress] = useState(0);
-  const [phase, setPhase] = useState("Preparing spawn area...");
+  const [phase, setPhase] = useState("Building terrain...");
   const [tip, setTip] = useState(tips[0]);
   const [exiting, setExiting] = useState(false);
   const [visible, setVisible] = useState(true);
@@ -85,62 +30,53 @@ export default function LoadingScreen() {
     
     document.body.style.overflow = "hidden";
 
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+    // Minecraft-style loading phases
+    const phases = [
+      { text: "Building terrain...", duration: 1200, progress: 0 },
+      { text: "Preparing spawn area...", duration: 800, progress: 25 },
+      { text: "Loading terrain...", duration: 1000, progress: 45 },
+      { text: "Populating chunks...", duration: 900, progress: 65 },
+      { text: "Generating structures...", duration: 700, progress: 80 },
+      { text: "Spawning entities...", duration: 600, progress: 90 },
+      { text: "Finishing up...", duration: 500, progress: 95 },
+    ];
 
-    // Initial state: DARK/EMPTY
-    ctx.fillStyle = "#1a1a1a";
-    ctx.fillRect(0, 0, SIZE, SIZE);
+    let currentPhaseIndex = 0;
+    let animationFrame: number;
+    let startTime = Date.now();
 
-    const order = getSpiralOrder(GRID);
-    let idx = 0;
-    const chunksPerFrame = 12; // Adjusted for 23x23 grid
-
-    const tick = () => {
-      if (!ctx) return;
-
-      for (let i = 0; i < chunksPerFrame; i++) {
-        if (idx >= order.length) break;
-        const [col, row] = order[idx];
-        
-        // LOADING (bright blue)
-        ctx.fillStyle = "#4a9eff";
-        ctx.fillRect(col * (CELL + GAP), row * (CELL + GAP), CELL, CELL);
-        
-        // Settle to final color slightly later for flash effect
-        const finalColor = getChunkColor(col, row);
-        const currentIndex = idx;
-        setTimeout(() => {
-          if (!ctx) return;
-          ctx.fillStyle = finalColor;
-          ctx.fillRect(order[currentIndex][0] * (CELL + GAP), order[currentIndex][1] * (CELL + GAP), CELL, CELL);
-        }, 20);
-
-        idx++;
-      }
+    const animate = () => {
+      const elapsed = Date.now() - startTime;
+      const currentPhase = phases[currentPhaseIndex];
       
-      const pct = Math.min(100, Math.round((idx / order.length) * 100));
-      setProgress(pct);
-      
-      if (pct < 25) setPhase("Preparing spawn area...");
-      else if (pct < 60) setPhase("Loading terrain...");
-      else if (pct < 85) setPhase("Generating structures...");
-      else setPhase("Finishing up...");
-
-      if (idx < order.length) {
-        requestAnimationFrame(tick);
-      } else {
+      if (!currentPhase) {
+        setProgress(100);
         setTimeout(startExit, 400);
+        return;
       }
+
+      // Calculate progress within current phase
+      const phaseProgress = Math.min(elapsed / currentPhase.duration, 1);
+      const nextPhase = phases[currentPhaseIndex + 1];
+      const targetProgress = nextPhase ? nextPhase.progress : 100;
+      const currentProgress = currentPhase.progress + (targetProgress - currentPhase.progress) * phaseProgress;
+      
+      setProgress(Math.floor(currentProgress));
+      setPhase(currentPhase.text);
+
+      if (elapsed >= currentPhase.duration) {
+        currentPhaseIndex++;
+        startTime = Date.now();
+      }
+
+      animationFrame = requestAnimationFrame(animate);
     };
 
     const startTimeout = setTimeout(() => {
-      requestAnimationFrame(tick);
+      animationFrame = requestAnimationFrame(animate);
     }, 100);
 
+    // Rotate tips
     const tipInterval = setInterval(() => {
       setTip(prev => {
         const currentIdx = tips.indexOf(prev);
@@ -151,6 +87,7 @@ export default function LoadingScreen() {
     return () => {
       clearTimeout(startTimeout);
       clearInterval(tipInterval);
+      cancelAnimationFrame(animationFrame);
       document.body.style.overflow = "";
     };
   }, []);
@@ -169,16 +106,9 @@ export default function LoadingScreen() {
   return (
     <div className={`loading-screen ${exiting ? "loading-exit" : ""}`}>
       <img 
-        src="/assets/footer/footer logo.png" 
+        src="/assets/footer/QuantCraft.svg?v=2" 
         className="loading-logo" 
         alt="QuantCraft" 
-      />
-      
-      <canvas 
-        ref={canvasRef}
-        width={SIZE} 
-        height={SIZE}
-        className="chunk-canvas" 
       />
 
       <div className="loading-bar-wrap">
@@ -188,11 +118,13 @@ export default function LoadingScreen() {
             className="loading-bar-fill" 
             style={{ width: `${progress}%` }} 
           />
-          <span className="loading-pct">{progress}%</span>
         </div>
+        <p className="loading-percentage">{progress}%</p>
       </div>
 
-      <p className="loading-tip">§e {tip}</p>
+      <p className="loading-tip">
+        <span className="tip-label">Did you know?</span> {tip}
+      </p>
     </div>
   );
 }

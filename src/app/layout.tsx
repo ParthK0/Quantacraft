@@ -98,9 +98,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <head>
-        {/* Preload critical fonts */}
-        <link rel="preload" as="font" href="/fonts/press-start-2p.woff2" type="font/woff2" crossOrigin="anonymous" />
-        {/* Preconnect to external resources */}
+        {/* Preconnect to external resources for faster font loading */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>

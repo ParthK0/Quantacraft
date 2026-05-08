@@ -49,7 +49,7 @@ export default function Footer() {
             {/* [Col 1 - Brand] */}
             <div className="flex flex-col pr-8 mb-8 lg:mb-0 bg-black/30 p-4 backdrop-blur-[2px]">
               <img
-                src="/assets/footer/footer logo.png"
+                src="/assets/footer/QuantCraft.svg?v=2"
                 alt="QuantCraft Logo"
                 className="h-16 w-auto mb-6 object-contain self-start filter drop-shadow-[0_0_12px_rgba(0,255,255,0.6)]"
                 loading="lazy"

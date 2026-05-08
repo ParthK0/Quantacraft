@@ -108,8 +108,18 @@ export default function CustomCursor() {
   useEffect(() => {
     if (isMobile) return;
 
+    // Initialize cursor as visible
+    if (cursorRef.current) {
+      cursorRef.current.style.opacity = "1";
+    }
+
     const handleMouseMove = (e: MouseEvent) => {
       setPosition({ x: e.clientX, y: e.clientY });
+
+      // Ensure cursor is visible when moving
+      if (cursorRef.current) {
+        cursorRef.current.style.opacity = "1";
+      }
 
       // Check if hovering over interactive element
       const target = e.target as HTMLElement;
@@ -140,12 +150,20 @@ export default function CustomCursor() {
       setBloodDrops([]);
     };
 
+    const handleMouseEnter = () => {
+      if (cursorRef.current) {
+        cursorRef.current.style.opacity = "1";
+      }
+    };
+
     window.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseleave", handleMouseLeave);
+    document.addEventListener("mouseenter", handleMouseEnter);
 
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseleave", handleMouseLeave);
+      document.removeEventListener("mouseenter", handleMouseEnter);
     };
   }, [isHovering, isMobile]);
 
@@ -214,7 +232,7 @@ export default function CustomCursor() {
       {!isMobile && (
         <div
           ref={cursorRef}
-          className={`fixed pointer-events-none z-[99999] ${isHovering ? "sword-cursor-active" : ""}`}
+          className={`fixed pointer-events-none ${isHovering ? "sword-cursor-active" : ""}`}
           style={{
             left: `${position.x}px`,
             top: `${position.y}px`,
@@ -226,6 +244,8 @@ export default function CustomCursor() {
             width: "48px",
             height: "48px",
             transition: !isHovering ? "transform 0.3s ease-out" : "none",
+            zIndex: 999999,
+            position: "fixed",
           }}
         >
           {/* Blood Drops Container */}

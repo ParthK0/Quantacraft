@@ -93,7 +93,7 @@ export default function Prizes() {
   return (
     <section 
       id="prizes" 
-      className="py-8 md:py-12 px-4 relative overflow-hidden flex flex-col items-center justify-center"
+      className="py-12 md:py-12 px-4 relative overflow-hidden flex flex-col items-center justify-center min-h-screen"
       style={{
         backgroundImage: 'linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url("/assets/prizes/bg1.png")',
         backgroundSize: 'cover',
@@ -109,7 +109,7 @@ export default function Prizes() {
         <SectionHeader
           title="PRIZE POOL"
           subtext=""
-          className="pt-8 mb-12 md:mb-[-30px]"
+          className="pt-4 mb-8 md:mb-[-30px]"
           titleClassName="[word-spacing:-0.6em]"
         />
 
@@ -148,46 +148,48 @@ export default function Prizes() {
           </div>
         </div>
 
-        {/* Mobile Layout: 1-2-2 Staggered Grid */}
-        <div className="flex flex-col md:hidden items-center gap-6 mt-4">
-          {/* Row 1: 1st Prize (Ender) */}
-          <div className="flex justify-center w-full">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="w-full max-w-[180px]"
-            >
-              <PrizeChest data={prizesData[0]} />
-            </motion.div>
-          </div>
+        {/* Mobile Layout: Vertical Stack with Better Spacing */}
+        <div className="flex flex-col md:hidden items-center gap-8 px-4">
+          {/* First Prize - Champion - Largest */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="w-full max-w-[280px]"
+          >
+            <PrizeChest data={prizesData[0]} />
+          </motion.div>
 
-          {/* Row 2: 2nd & 3rd Prizes (Golden & Iron) */}
-          <div className="flex flex-row justify-center items-end gap-3 w-full">
+          {/* Second and Third Prizes - Side by Side */}
+          <div className="flex gap-6 w-full justify-center items-end">
             {[prizesData[1], prizesData[2]].map((prize, index) => (
               <motion.div
                 key={prize.id}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="w-1/2 max-w-[150px]"
+                transition={{ delay: 0.2 + index * 0.1, duration: 0.5 }}
+                className="flex-1 max-w-[140px]"
               >
                 <PrizeChest data={prize} />
               </motion.div>
             ))}
           </div>
 
-          {/* Row 3: 4th & 5th Prizes (Nether & Wood) */}
-          <div className="flex flex-row justify-center items-end gap-3 w-full">
-            {[prizesData[3], prizesData[4]].map((prize, index) => (
+          {/* Divider */}
+          <div className="w-full max-w-[280px] h-[2px] bg-gradient-to-r from-transparent via-purple-500/50 to-transparent my-2"></div>
+
+          {/* Special Prizes - Side by Side */}
+          <div className="flex gap-6 w-full justify-center items-end">
+            {prizesData.slice(3, 5).map((prize, index) => (
               <motion.div
                 key={prize.id}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className="w-1/2 max-w-[140px]"
+                transition={{ delay: 0.4 + index * 0.1, duration: 0.5 }}
+                className="flex-1 max-w-[130px]"
               >
                 <PrizeChest data={prize} />
               </motion.div>

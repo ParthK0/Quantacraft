@@ -197,11 +197,11 @@ const InstagramIcon = () => (
   </svg>
 );
 
-const AUTO_SPEED = 1.3; // px per animation frame (~78 px/s at 60 fps)
+const AUTO_ADVANCE_INTERVAL = 3000; // Auto-advance to next card every 3 seconds
 
 export default function Team() {
   const trackRef = useRef<HTMLDivElement>(null);
-  const rafRef = useRef<number>(0);
+  const autoAdvanceTimer = useRef<NodeJS.Timeout | null>(null);
   const paused = useRef(false);   // true while hovered or mid-arrow-click
   const nudging = useRef(false);   // true while smooth-scrolling an arrow
 
@@ -211,7 +211,8 @@ export default function Team() {
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 768) {
-        setDim({ cardW: 90, gap: 6, cardH: 160 });
+        // Mobile: single centered card view
+        setDim({ cardW: 240, gap: 60, cardH: 380 });
       } else {
         setDim({ cardW: 260, gap: 24, cardH: 540 });
       }
@@ -252,7 +253,23 @@ export default function Team() {
     else if (el.scrollLeft >= midEnd - step * 2) el.scrollLeft -= team.length * step;
   }, [step]);
 
-  // ── RAF auto-scroll loop ──────────────────────────────────────────────────
+  // ── Auto-advance to next card ─────────────────────────────────────────────
+  const advanceToNext = useCallback(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    if (paused.current) return;
+    if (nudging.current) return;
+    
+    nudging.current = true;
+    el.scrollBy({ left: step, behavior: "smooth" });
+    
+    setTimeout(() => {
+      nudging.current = false;
+      wrapIfNeeded();
+    }, 520);
+  }, [step, wrapIfNeeded]);
+
+  // ── Auto-advance timer ────────────────────────────────────────────────────
   useEffect(() => {
     const el = trackRef.current;
     if (!el) return;
@@ -260,28 +277,51 @@ export default function Team() {
     // Start at middle copy
     el.scrollLeft = team.length * step;
 
-    const tick = () => {
-      if (!paused.current && !nudging.current) {
-        el.scrollLeft += AUTO_SPEED;
+    // Set up auto-advance interval
+    const intervalId = setInterval(() => {
+      const element = trackRef.current;
+      if (!element) return;
+      if (paused.current) return;
+      if (nudging.current) return;
+      
+      nudging.current = true;
+      element.scrollBy({ left: step, behavior: "smooth" });
+      
+      setTimeout(() => {
+        nudging.current = false;
         wrapIfNeeded();
+      }, 520);
+    }, AUTO_ADVANCE_INTERVAL);
+    
+    autoAdvanceTimer.current = intervalId;
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
       }
-      rafRef.current = requestAnimationFrame(tick);
     };
-    rafRef.current = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(rafRef.current);
-  }, [wrapIfNeeded, step]);
+  }, [step, wrapIfNeeded]);
 
   // ── Arrow buttons ─────────────────────────────────────────────────────────
   const scroll = useCallback((dir: "left" | "right") => {
     const el = trackRef.current;
     if (!el) return;
+    
+    // Reset auto-advance timer when user manually navigates
+    if (autoAdvanceTimer.current) {
+      clearInterval(autoAdvanceTimer.current);
+      autoAdvanceTimer.current = setInterval(() => {
+        advanceToNext();
+      }, AUTO_ADVANCE_INTERVAL);
+    }
+    
     nudging.current = true;
     el.scrollBy({ left: dir === "left" ? -step : step, behavior: "smooth" });
     setTimeout(() => {
       nudging.current = false;
       wrapIfNeeded();
     }, 520);
-  }, [wrapIfNeeded, step]);
+  }, [wrapIfNeeded, step, advanceToNext]);
 
   // ── Pause/resume on hover ─────────────────────────────────────────────────
   const pause = useCallback(() => { paused.current = true; }, []);
@@ -314,48 +354,79 @@ export default function Team() {
 
       {/* Carousel wrapper */}
       <div className="relative" onMouseEnter={pause} onMouseLeave={resume}>
-        {/* Edge fades */}
-        <div className="absolute inset-y-0 left-0 w-28 bg-gradient-to-r from-zinc-950 to-transparent z-20 pointer-events-none" />
-        <div className="absolute inset-y-0 right-0 w-28 bg-gradient-to-l from-zinc-950 to-transparent z-20 pointer-events-none" />
-
-        {/* ← Arrow — always visible */}
+        {/* ← Arrow — Minecraft-style navigation */}
         <button
           id="team-scroll-left"
           onClick={() => scroll("left")}
           aria-label="Scroll left"
-          className="absolute left-4 top-1/2 -translate-y-1/2 z-30 flex items-center justify-center w-8 h-8 md:w-12 md:h-12 rounded-full
-                     bg-zinc-900 border-2 border-white/10 text-white
-                     hover:border-minecraft-green hover:text-minecraft-green
-                     active:scale-95 transition-all duration-200"
+          className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 z-30 
+                     flex items-center justify-center 
+                     w-12 h-12 md:w-12 md:h-12
+                     bg-gradient-to-br from-[#8B4513] to-[#5D2F0A] 
+                     border-3 border-[#D2691E]
+                     text-[#FFD700]
+                     hover:border-[#00FFCC] hover:text-[#00FFCC]
+                     active:scale-90 
+                     transition-all duration-150
+                     shadow-[0_3px_0_rgba(93,47,10,1),0_0_10px_rgba(139,69,19,0.4)]
+                     hover:shadow-[0_3px_0_rgba(0,255,204,0.8),0_0_15px_rgba(0,255,204,0.5)]
+                     active:shadow-[0_1px_0_rgba(93,47,10,1)]
+                     active:translate-y-0.5"
         >
-          <ChevronLeft className="w-4 h-4 md:w-6 md:h-6" />
+          <ChevronLeft className="w-6 h-6 md:w-6 md:h-6" strokeWidth={3} />
         </button>
 
-        {/* → Arrow — always visible */}
+        {/* → Arrow — Minecraft-style navigation */}
         <button
           id="team-scroll-right"
           onClick={() => scroll("right")}
           aria-label="Scroll right"
-          className="absolute right-4 top-1/2 -translate-y-1/2 z-30 flex items-center justify-center w-8 h-8 md:w-12 md:h-12 rounded-full
-                     bg-zinc-900 border-2 border-white/10 text-white
-                     hover:border-minecraft-green hover:text-minecraft-green
-                     active:scale-95 transition-all duration-200"
+          className="absolute right-2 md:right-4 top-1/2 -translate-y-1/2 z-30 
+                     flex items-center justify-center 
+                     w-12 h-12 md:w-12 md:h-12
+                     bg-gradient-to-br from-[#8B4513] to-[#5D2F0A] 
+                     border-3 border-[#D2691E]
+                     text-[#FFD700]
+                     hover:border-[#00FFCC] hover:text-[#00FFCC]
+                     active:scale-90 
+                     transition-all duration-150
+                     shadow-[0_3px_0_rgba(93,47,10,1),0_0_10px_rgba(139,69,19,0.4)]
+                     hover:shadow-[0_3px_0_rgba(0,255,204,0.8),0_0_15px_rgba(0,255,204,0.5)]
+                     active:shadow-[0_1px_0_rgba(93,47,10,1)]
+                     active:translate-y-0.5"
         >
-          <ChevronRight className="w-4 h-4 md:w-6 md:h-6" />
+          <ChevronRight className="w-6 h-6 md:w-6 md:h-6" strokeWidth={3} />
         </button>
 
-        {/* Scrollable track */}
+        {/* Scrollable track with smooth card transitions */}
         <div
           ref={trackRef}
           onScroll={handleScroll}
-          className="flex overflow-x-auto no-scrollbar gap-2 md:gap-6 px-16 pb-10"
-          style={{ scrollBehavior: "auto" }}  /* we control smooth manually */
+          className="flex items-center overflow-x-auto no-scrollbar gap-[60px] md:gap-6 pb-10 pt-4"
+          style={{ 
+            scrollBehavior: "smooth",
+            scrollSnapType: "x mandatory",
+            paddingLeft: `calc(50% - ${dim.cardW / 2}px)`,
+            paddingRight: `calc(50% - ${dim.cardW / 2}px)`
+          }}
         >
           {looped.map((member, i) => (
-            <div
+            <motion.div
               key={i}
               className="group relative shrink-0"
-              style={{ width: dim.cardW, aspectRatio: "3/4", height: dim.cardH }}
+              style={{ 
+                width: dim.cardW, 
+                aspectRatio: "3/4", 
+                height: dim.cardH,
+                scrollSnapAlign: "center"
+              }}
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: false, margin: "-20%" }}
+              transition={{ 
+                duration: 0.4,
+                ease: [0.25, 0.46, 0.45, 0.94]
+              }}
             >
               <MinecraftProfileCard
                 name={member.name}
@@ -370,18 +441,11 @@ export default function Team() {
                 instagramUrl={member.social.instagram}
                 theme={member.squad === "Operations Squad" ? "orange-gold" : "blue-green"}
               />
-
-              {/* Train coupler bar decoration */}
-              <div className="absolute top-1/2 -right-3 w-3 h-1 bg-zinc-800 z-0" />
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
     </div>
-
-    {/* Rail track decoration */}
-      <div className="absolute bottom-20 left-0 right-0 h-px opacity-30 pointer-events-none"
-        style={{ background: "repeating-linear-gradient(to right,#3f3f46 0,#3f3f46 24px,transparent 24px,transparent 40px)" }} />
     </section>
   );
 }

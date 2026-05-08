@@ -73,7 +73,7 @@ export default function OptimizedImage({
           quality={quality}
           placeholder={placeholder}
           blurDataURL={blurDataURL}
-          onLoadingComplete={() => {
+          onLoad={() => {
             setIsLoading(false);
             onLoad?.();
           }}

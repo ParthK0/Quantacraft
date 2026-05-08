@@ -11,11 +11,11 @@ export default function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <section id="faq" className="relative py-16 overflow-hidden">
+    <section id="faq" className="relative py-16 overflow-hidden bg-gradient-to-b from-slate-800 to-slate-900">
       {/* 📹 Background Video - Desktop (Lazy Loaded) */}
       <LazyVideo
         src="/assets/FAQs/FAQs.mp4"
-        className="absolute inset-0 w-full h-full object-cover -z-10 brightness-110 hidden md:block"
+        className="absolute inset-0 w-full h-full object-cover z-0 brightness-110 hidden md:block"
         autoPlay
         loop
         muted
@@ -23,16 +23,18 @@ export default function FAQ() {
       />
 
       {/* 🖼️ Background Image - Mobile (Optimized) */}
-      <OptimizedImage
-        src="/assets/about/sky.jpg"
-        alt="Sky Background"
-        fill
-        className="absolute inset-0 w-full h-full object-cover -z-10 brightness-110 block md:hidden"
-        priority={false}
-      />
+      <div className="absolute inset-0 z-0 block md:hidden">
+        <OptimizedImage
+          src="/assets/about/sky.jpg"
+          alt="Sky Background"
+          fill
+          className="object-cover brightness-110"
+          priority={true}
+        />
+      </div>
 
-      {/* 🌑 Overlay for readability (Reduced opacity for more brightness) */}
-      <div className="absolute inset-0 bg-black/20 -z-10" />
+      {/* 🌑 Very light overlay for text contrast only */}
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/5 to-transparent z-[1]" />
 
       <div className="max-w-3xl mx-auto px-4 relative z-10">
         <SectionHeader

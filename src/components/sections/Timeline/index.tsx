@@ -2,15 +2,6 @@
 
 import { motion } from "framer-motion";
 import SectionHeader from "@/components/ui/SectionHeader";
-import { 
-  Rocket, 
-  FileText, 
-  Timer, 
-  Users, 
-  Search, 
-  Trophy,
-  Calendar
-} from "lucide-react";
 
 const events = [
   { 
@@ -52,8 +43,6 @@ export default function Timeline() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(160,0,255,0.1),transparent_70%)]" />
 
       <div className="max-w-6xl mx-auto px-6 relative z-10">
-
-
         <SectionHeader 
           title="EVENT TIMELINE" 
           subtext="Tick Tock Hack!!"
@@ -63,19 +52,47 @@ export default function Timeline() {
       </div>
 
       <div className="max-w-6xl mx-auto relative z-10">
-        {/* Central Vertical Line (Solid Dark Green Vine) */}
-        <div className="absolute left-6 md:left-1/2 top-0 bottom-0 w-2 bg-[#1b4332] -translate-x-1/2 z-0 shadow-[0_0_15px_rgba(27,67,50,0.4)]">
-          {/* Leaf Blocks */}
-          {[...Array(15)].map((_, i) => (
-            <div 
+        {/* Central Vertical Redstone Line */}
+        <div className="absolute left-6 md:left-1/2 top-0 bottom-0 w-3 -translate-x-1/2 z-0">
+          {/* Main Redstone Wire */}
+          <div className="w-full h-full bg-gradient-to-b from-[#8B0000] via-[#DC143C] to-[#8B0000] shadow-[0_0_20px_rgba(220,20,60,0.6)]">
+            {/* Redstone Dust Particles */}
+            <div className="absolute inset-0 opacity-60" style={{
+              backgroundImage: `
+                radial-gradient(circle at 25% 25%, #FF6B6B 1px, transparent 1px),
+                radial-gradient(circle at 75% 75%, #FF4444 1px, transparent 1px),
+                radial-gradient(circle at 50% 50%, #DC143C 1px, transparent 1px)
+              `,
+              backgroundSize: '8px 8px, 12px 12px, 6px 6px',
+              animation: 'redstoneFlicker 2s ease-in-out infinite'
+            }}></div>
+          </div>
+
+          {/* Redstone Repeaters */}
+          {[...Array(8)].map((_, i) => (
+            <motion.div 
               key={i}
-              className="absolute w-2 h-2 md:w-3 md:h-3 bg-[#2d6a4f] rotate-45 border border-[#1b4332]"
+              className="absolute w-6 h-4 bg-[#4A4A4A] border-2 border-[#2A2A2A] -left-1.5"
               style={{ 
-                top: `${(i * 7) + 2}%`, 
-                left: i % 2 === 0 ? '-3px' : '3px',
-                opacity: 0.8
+                top: `${(i * 12) + 8}%`,
+                boxShadow: '0 0 10px rgba(220, 20, 60, 0.4)'
               }}
-            />
+              animate={{
+                boxShadow: [
+                  '0 0 10px rgba(220, 20, 60, 0.4)',
+                  '0 0 20px rgba(220, 20, 60, 0.8)',
+                  '0 0 10px rgba(220, 20, 60, 0.4)'
+                ]
+              }}
+              transition={{
+                duration: 1.5,
+                repeat: Infinity,
+                delay: i * 0.2
+              }}
+            >
+              {/* Repeater Torch */}
+              <div className="absolute top-0.5 left-1/2 -translate-x-1/2 w-1 h-2 bg-[#FFD700] shadow-[0_0_6px_rgba(255,215,0,0.8)]"></div>
+            </motion.div>
           ))}
         </div>
 
@@ -90,37 +107,83 @@ export default function Timeline() {
                 i % 2 === 0 ? "flex-row md:flex-row" : "flex-row md:flex-row-reverse"
               }`}
             >
-              {/* Event Image Card */}
+              {/* Event Image Card with Minecraft Frame */}
               <div className={`flex-1 w-full z-10 pl-16 md:pl-0 ${
                 i % 2 === 0 ? "md:pr-12" : "md:pl-12"
               }`}>
                 <motion.div 
                   whileHover={{ scale: 1.05 }}
-                  className="relative cursor-pointer transition-all duration-300 drop-shadow-[0_0_15px_rgba(160,0,255,0.1)] hover:drop-shadow-[0_0_25px_rgba(160,0,255,0.3)]"
+                  transition={{ duration: 0.2, ease: "easeOut" }}
+                  className="relative cursor-pointer"
                 >
-                  <img 
-                    src={event.imageSrc} 
-                    alt={event.alt}
-                    className="w-full h-[80px] md:h-[140px] object-contain"
-                  />
+                  {/* Minecraft-style Frame */}
+                  <div className="relative bg-gradient-to-br from-[#8B4513] to-[#5D2F0A] border-4 border-[#D2691E] p-2 shadow-2xl">
+                    {/* Corner Brackets */}
+                    <div className="absolute -top-1 -left-1 w-3 h-3 border-l-2 border-t-2 border-[#FFD700]"></div>
+                    <div className="absolute -top-1 -right-1 w-3 h-3 border-r-2 border-t-2 border-[#FFD700]"></div>
+                    <div className="absolute -bottom-1 -left-1 w-3 h-3 border-l-2 border-b-2 border-[#FFD700]"></div>
+                    <div className="absolute -bottom-1 -right-1 w-3 h-3 border-r-2 border-b-2 border-[#FFD700]"></div>
+                    
+                    {/* Inner Glow */}
+                    <div className="absolute inset-1 bg-gradient-to-br from-cyan-500/10 to-purple-500/10"></div>
+                    
+                    <img 
+                      src={event.imageSrc} 
+                      alt={event.alt}
+                      className="relative w-full h-[80px] md:h-[140px] object-contain z-10"
+                    />
+                  </div>
                 </motion.div>
               </div>
 
-              {/* Horizontal Connector (Solid Dark Green Branch) */}
-              <div className={`absolute top-1/2 -translate-y-1/2 h-1 bg-[#1b4332] z-0 ${
+              {/* Horizontal Redstone Connector */}
+              <div className={`absolute top-1/2 -translate-y-1/2 h-2 bg-gradient-to-r from-[#8B0000] to-[#DC143C] z-0 shadow-[0_0_10px_rgba(220,20,60,0.5)] ${
                 i % 2 === 0 
                   ? "left-6 right-1/2 md:left-[20%]" 
                   : "left-6 right-1/2 md:right-[20%] md:left-1/2"
-              }`} />
+              }`}>
+                {/* Redstone Dust Effect */}
+                <div className="absolute inset-0 opacity-40" style={{
+                  backgroundImage: `radial-gradient(circle at 50% 50%, #FF4444 1px, transparent 1px)`,
+                  backgroundSize: '4px 4px'
+                }}></div>
+              </div>
 
-              {/* Center Connection Point (Bold Green Block) */}
-              <div className="absolute left-6 md:left-1/2 -translate-x-1/2 w-4 h-4 md:w-6 md:h-6 bg-[#2d6a4f] border-[2px] md:border-[3px] border-[#1b4332] shadow-[0_0_10px_rgba(45,106,79,0.5)] z-20 rotate-45" />
+              {/* Center Connection Point (Redstone Block) */}
+              <motion.div 
+                className="absolute left-6 md:left-1/2 -translate-x-1/2 w-6 h-6 md:w-8 md:h-8 bg-gradient-to-br from-[#DC143C] to-[#8B0000] border-2 border-[#4A0000] z-20 shadow-[0_0_15px_rgba(220,20,60,0.8)]"
+                animate={{
+                  boxShadow: [
+                    '0 0 15px rgba(220, 20, 60, 0.8)',
+                    '0 0 25px rgba(220, 20, 60, 1)',
+                    '0 0 15px rgba(220, 20, 60, 0.8)'
+                  ]
+                }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  delay: i * 0.3
+                }}
+              >
+                {/* Inner Redstone Texture */}
+                <div className="absolute inset-0.5 bg-gradient-to-br from-[#FF4444] to-[#CC0000] opacity-60"></div>
+                {/* Redstone Dust Sparkle */}
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1 h-1 bg-[#FFD700] rounded-full animate-pulse"></div>
+              </motion.div>
               
               <div className="flex-1 hidden md:block" />
             </motion.div>
           ))}
         </div>
       </div>
+
+      {/* CSS for Redstone Animation */}
+      <style jsx>{`
+        @keyframes redstoneFlicker {
+          0%, 100% { opacity: 0.6; }
+          50% { opacity: 0.9; }
+        }
+      `}</style>
     </section>
   );
 }
