@@ -1,16 +1,18 @@
 "use client";
 
-import { motion, useScroll } from "framer-motion";
-import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import OptimizedImage from "@/components/OptimizedImage";
 
 export default function Hero() {
   return (
     <section id="hero" className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
       {/* Background Media (GIF as video background) */}
-      <img
+      <OptimizedImage
         src="/assets/hero%20background%203.gif"
         alt="Hero Background"
+        fill
         className="absolute inset-0 w-full h-full object-cover -z-10 pointer-events-none"
+        priority={true}
       />
 
       {/* Overlays for depth and readability */}
@@ -25,7 +27,14 @@ export default function Hero() {
         transition={{ duration: 1, delay: 0.5 }}
         className="absolute top-4 left-4 md:top-8 md:left-8 z-20 w-24 sm:w-32 md:w-64 pointer-events-none select-none"
       >
-        <img src="/assets/hero/date.png" alt="Date" className="w-full h-auto drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]" />
+        <OptimizedImage 
+          src="/assets/hero/date.png" 
+          alt="Event Date" 
+          width={256}
+          height={256}
+          className="w-full h-auto drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]"
+          priority={true}
+        />
       </motion.div>
 
       <motion.a 
@@ -42,8 +51,16 @@ export default function Hero() {
           filter: { duration: 0.2 }
         }}
         className="absolute top-4 right-4 md:top-8 md:right-8 z-20 w-24 sm:w-32 md:w-64 pointer-events-auto cursor-pointer"
+        aria-label="Register for QuantCraft"
       >
-        <img src="/assets/hero/register1.png" alt="Register" className="w-full h-auto drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]" />
+        <OptimizedImage 
+          src="/assets/hero/register1.png" 
+          alt="Register Button" 
+          width={256}
+          height={256}
+          className="w-full h-auto drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]"
+          priority={true}
+        />
       </motion.a>
 
       {/* Main Logo in Centre - Floating Effect */}
@@ -65,10 +82,13 @@ export default function Hero() {
         }}
         className="z-10 w-full max-w-xl px-6 pointer-events-none select-none"
       >
-        <img
+        <OptimizedImage
           src="/assets/main Logo.png"
           alt="QuantCraft Logo"
+          width={512}
+          height={512}
           className="w-full h-auto filter drop-shadow-[0_0_60px_rgba(85,255,85,0.4)] brightness-110"
+          priority={true}
         />
       </motion.div>
     </section>

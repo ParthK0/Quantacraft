@@ -1,8 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { SiInstagram, SiX } from "react-icons/si";
-import { FaLinkedin } from "react-icons/fa";
+import { Share2, Mail, Phone } from "lucide-react";
+import { socialLinks, contactInfo, quickLinks } from "@/lib/data";
 
 export default function Footer() {
   return (
@@ -52,6 +52,7 @@ export default function Footer() {
                 src="/assets/footer/footer logo.png"
                 alt="QuantCraft Logo"
                 className="h-16 w-auto mb-6 object-contain self-start filter drop-shadow-[0_0_12px_rgba(0,255,255,0.6)]"
+                loading="lazy"
               />
                   <div className="space-y-6">
                     {/* Nexido Socials */}
@@ -59,9 +60,9 @@ export default function Footer() {
                       <h3 className="footer-heading !mb-3">FOLLOW NEXIDO</h3>
                       <div className="flex flex-wrap gap-3">
                         {[
-                          { Icon: SiInstagram, href: "https://www.instagram.com/nexido_official?igsh=MXFsNndtdDZzMTM2dQ==", label: "NEXIDO INSTAGRAM" },
-                          { Icon: SiX, href: "https://x.com/nexido_official", label: "NEXIDO X" },
-                          { Icon: FaLinkedin, href: "https://www.linkedin.com/company/nexido/", label: "NEXIDO LINKEDIN" }
+                          { Icon: Share2, href: socialLinks.nexido.instagram, label: "NEXIDO INSTAGRAM" },
+                          { Icon: Share2, href: socialLinks.nexido.x, label: "NEXIDO X" },
+                          { Icon: Share2, href: socialLinks.nexido.linkedin, label: "NEXIDO LINKEDIN" }
                         ].map(({ Icon, href, label }, idx) => (
                           <a 
                             key={idx}
@@ -70,8 +71,9 @@ export default function Footer() {
                             rel="noopener noreferrer"
                             className="w-[36px] h-[36px] flex items-center justify-center border-2 border-[#67e8f9] rounded-none bg-[rgba(103,232,249,0.1)] text-[#67e8f9] transition-all duration-200 hover:bg-[#67e8f9] hover:text-[#0f1a0f] hover:shadow-[0_0_15px_#67e8f9] hover:-translate-y-[3px]"
                             title={label}
+                            aria-label={label}
                           >
-                            <Icon className="w-4 h-4" />
+                            <Icon className="w-4 h-4" aria-hidden="true" />
                           </a>
                         ))}
                       </div>
@@ -82,7 +84,7 @@ export default function Footer() {
                       <h3 className="footer-heading !mb-3">FOLLOW BUILDER BASE</h3>
                       <div className="flex flex-wrap gap-3">
                         {[
-                          { Icon: SiInstagram, href: "https://www.instagram.com/the.builderbase?igsh=MWljNWU2YnFwdDBoeA==", label: "BUILDER BASE INSTAGRAM" }
+                          { Icon: Share2, href: socialLinks.builderbase.instagram, label: "BUILDER BASE INSTAGRAM" }
                         ].map(({ Icon, href, label }, idx) => (
                           <a 
                             key={idx}
@@ -91,8 +93,9 @@ export default function Footer() {
                             rel="noopener noreferrer"
                             className="w-[36px] h-[36px] flex items-center justify-center border-2 border-[#67e8f9] rounded-none bg-[rgba(103,232,249,0.1)] text-[#67e8f9] transition-all duration-200 hover:bg-[#67e8f9] hover:text-[#0f1a0f] hover:shadow-[0_0_15px_#67e8f9] hover:-translate-y-[3px]"
                             title={label}
+                            aria-label={label}
                           >
-                            <Icon className="w-4 h-4" />
+                            <Icon className="w-4 h-4" aria-hidden="true" />
                           </a>
                         ))}
                       </div>
@@ -104,10 +107,10 @@ export default function Footer() {
             <div className="lg:border-l lg:border-white/10 pl-4 lg:pl-12 mb-8 lg:mb-0 bg-black/25 p-4 backdrop-blur-[2px]">
               <h3 className="footer-heading">Quick Links</h3>
               <ul className="space-y-3">
-                {['Home', 'About', 'Tracks', 'Prizes', 'FAQs'].map((link) => (
-                  <li key={link}>
-                    <a href={`#${link.toLowerCase()}`} className="footer-link-pixel">
-                      {link}
+                {quickLinks.map((link) => (
+                  <li key={link.label}>
+                    <a href={link.href} className="footer-link-pixel">
+                      {link.label}
                     </a>
                   </li>
                 ))}
@@ -122,18 +125,18 @@ export default function Footer() {
                 <div className="space-y-4">
                   <div className="flex flex-col">
                     <span className="footer-label mb-1">Email</span>
-                    <a href="mailto:eren.techfest@gmail.com" className="font-exo text-[13px] text-[#cccccc] hover:text-[#67e8f9] transition-colors tracking-wide">
-                      eren.techfest@gmail.com
+                    <a href={`mailto:${contactInfo.email}`} className="font-exo text-[13px] text-[#cccccc] hover:text-[#67e8f9] transition-colors tracking-wide">
+                      {contactInfo.email}
                     </a>
                   </div>
                   <div className="flex flex-col">
                     <span className="footer-label mb-1">Phone</span>
-                    <span className="font-exo text-[13px] text-[#cccccc] tracking-widest">+91 9306576649</span>
+                    <span className="font-exo text-[13px] text-[#cccccc] tracking-widest">{contactInfo.phone}</span>
                   </div>
                   <div className="flex flex-col">
                     <span className="footer-label mb-1">Address</span>
                     <span className="font-exo text-[12px] text-[#cccccc] leading-relaxed">
-                      GALGOTIAS UNIVERSITY, PLOT NO. 2, YAMUNA EXPY, GREATER NOIDA, UP 203201
+                      {contactInfo.address}
                     </span>
                   </div>
                 </div>
@@ -145,10 +148,11 @@ export default function Footer() {
                   <span className="text-xl">📍</span> FIND US
                 </h3>
                 <a 
-                  href="http://google.com/maps/place/Galgotias+University/@28.3668904,77.5387649,730m/data=!3m2!1e3!4b1!4m6!3m5!1s0x390cc7365a740e65:0xd0d60a62e55ab171!8m2!3d28.3668904!4d77.5413398!16s%2Fm%2F0gff9fz?entry=ttu&g_ep=EgoyMDI2MDUwMi4wIKXMDSoASAFQAw%3D%3D"
+                  href={contactInfo.mapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="bg-[#0a0a0a] border-[3px] border-[#67e8f9] shadow-[0_0_15px_#67e8f9,inset_0_0_10px_rgba(103,232,249,0.1)] rounded-none p-1 overflow-hidden h-[180px] relative group block cursor-pointer"
+                  aria-label="Open location in Google Maps"
                 >
                   <div className="absolute inset-0 bg-[#67e8f9]/0 group-hover:bg-[#67e8f9]/10 transition-colors z-10 flex items-center justify-center">
                     <span className="opacity-0 group-hover:opacity-100 transition-opacity bg-[#0a0a0a] border border-[#67e8f9] text-[#67e8f9] font-minecraft text-[10px] px-3 py-1 uppercase tracking-widest shadow-[0_0_10px_#67e8f9]">
@@ -159,6 +163,7 @@ export default function Footer() {
                     className="w-full h-full border-0 transition-all duration-500 pointer-events-none"
                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3509.387114631383!2d77.53484217625126!3d28.377317675806653!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x390cc66264903333%3A0xc3c5d6c8b093f412!2sGalgotias%20University!5e0!3m2!1sen!2sin!4v1714742400000!5m2!1sen!2sin"
                     loading="lazy"
+                    title="Galgotias University Location"
                   ></iframe>
                 </a>
               </div>

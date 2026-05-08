@@ -2,26 +2,29 @@
 
 import { motion } from "framer-motion";
 import SectionHeader from "@/components/ui/SectionHeader";
+import LazyVideo from "@/components/LazyVideo";
+import OptimizedImage from "@/components/OptimizedImage";
 
 export default function About() {
   return (
     <section id="about" className="about-section py-0 px-4 relative overflow-hidden">
-      {/* Background Video - Desktop */}
-      <video
+      {/* Background Video - Desktop (Lazy Loaded) */}
+      <LazyVideo
+        src="/assets/about/mp_.mp4"
+        className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none hidden md:block"
         autoPlay
         muted
         loop
         playsInline
-        className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none hidden md:block"
-      >
-        <source src="/assets/about/mp_.mp4" type="video/mp4" />
-      </video>
+      />
 
-      {/* Background Image - Mobile */}
-      <img
+      {/* Background Image - Mobile (Optimized) */}
+      <OptimizedImage
         src="/assets/about/sky.jpg"
         alt="Sky Background"
+        fill
         className="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none block md:hidden"
+        priority={false}
       />
 
       <SectionHeader
@@ -57,10 +60,11 @@ export default function About() {
           className="about-image-container"
         >
           <div className="relative">
-            <img
+            <OptimizedImage
               src="/assets/college3.png"
               alt="College Campus"
               className="about-image"
+              priority={false}
             />
           </div>
         </motion.div>

@@ -1,57 +1,34 @@
 "use client";
 
 import { useState } from "react";
-import { GiWarPick } from "react-icons/gi";
+import { PickaxeIcon } from "lucide-react";
 import SectionHeader from "@/components/ui/SectionHeader";
-
-const faqs = [
-  {
-    q: "Who can participate?",
-    a: "Any student enrolled in a college or university across India. All skill levels welcome — beginners to advanced.",
-  },
-  {
-    q: "What is the team size?",
-    a: "Teams of 2–4 members. Solo participation not allowed.",
-  },
-  {
-    q: "Is there a registration fee?",
-    a: "No. QuantCraft is completely free to participate in.",
-  },
-  {
-    q: "What do I need to submit?",
-    a: "A PPT by May 15, followed by the final project by May 20.",
-  },
-  {
-    q: "Will accommodation be provided?",
-    a: "Details will be shared with shortlisted teams. Stay tuned.",
-  },
-  {
-    q: "What tracks can I build for?",
-    a: "AI/ML, Cybersecurity, Blockchain, Game Dev.",
-  },
-];
+import LazyVideo from "@/components/LazyVideo";
+import OptimizedImage from "@/components/OptimizedImage";
+import { faqData } from "@/lib/data";
 
 export default function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
     <section id="faq" className="relative py-16 overflow-hidden">
-      {/* 📹 Background Video - Desktop */}
-      <video
+      {/* 📹 Background Video - Desktop (Lazy Loaded) */}
+      <LazyVideo
+        src="/assets/FAQs/FAQs.mp4"
+        className="absolute inset-0 w-full h-full object-cover -z-10 brightness-110 hidden md:block"
         autoPlay
         loop
         muted
         playsInline
-        className="absolute inset-0 w-full h-full object-cover -z-10 brightness-110 hidden md:block"
-      >
-        <source src="/assets/FAQs/FAQs.mp4" type="video/mp4" />
-      </video>
+      />
 
-      {/* 🖼️ Background Image - Mobile */}
-      <img
+      {/* 🖼️ Background Image - Mobile (Optimized) */}
+      <OptimizedImage
         src="/assets/about/sky.jpg"
         alt="Sky Background"
+        fill
         className="absolute inset-0 w-full h-full object-cover -z-10 brightness-110 block md:hidden"
+        priority={false}
       />
 
       {/* 🌑 Overlay for readability (Reduced opacity for more brightness) */}
@@ -64,7 +41,7 @@ export default function FAQ() {
           className="pt-0"
         />
         <div className="space-y-4">
-          {faqs.map((faq, i) => (
+          {faqData.map((faq, i) => (
             <FAQItem
               key={i}
               faq={faq}
@@ -102,17 +79,24 @@ function FAQItem({
       <button
         onClick={onToggle}
         className="relative w-full p-5 flex items-center justify-between text-left z-10"
+        aria-expanded={isOpen}
+        aria-label={`Toggle answer for: ${faq.q}`}
       >
         <span className="font-minecraft text-[9px] md:text-[11px] text-white tracking-[1px] drop-shadow-[2px_2px_0_#A000FF] uppercase">
           {faq.q}
         </span>
         <div className={`transition-transform duration-300 ${isOpen ? "rotate-45 scale-110" : ""}`}>
-          <GiWarPick className="w-6 h-6 text-white drop-shadow-[2px_2px_0_#A000FF]" />
+          <PickaxeIcon 
+            className="w-6 h-6 text-white drop-shadow-[2px_2px_0_#A000FF]"
+            aria-hidden="true"
+          />
         </div>
       </button>
 
       <div
         className={`relative overflow-hidden transition-all duration-300 ease-in-out z-20 ${isOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"}`}
+        role="region"
+        aria-label="FAQ answer"
       >
         <div className="p-5 pt-0">
           <div className="p-4 bg-black/50 border-l-[4px] border-[#A000FF] backdrop-blur-[2px]">
