@@ -211,8 +211,8 @@ export default function Team() {
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth < 768) {
-        // Mobile: single centered card view
-        setDim({ cardW: 240, gap: 60, cardH: 380 });
+        // Mobile: single centered card view - increased height for social icons
+        setDim({ cardW: 240, gap: 60, cardH: 480 });
       } else {
         setDim({ cardW: 260, gap: 24, cardH: 540 });
       }
@@ -274,8 +274,11 @@ export default function Team() {
     const el = trackRef.current;
     if (!el) return;
 
-    // Start at middle copy
-    el.scrollLeft = team.length * step;
+    // Start at middle copy - centered
+    const initialScroll = team.length * step;
+    el.scrollLeft = initialScroll;
+
+    let currentIndex = team.length; // Start at middle copy
 
     // Set up auto-advance interval
     const intervalId = setInterval(() => {
@@ -285,11 +288,22 @@ export default function Team() {
       if (nudging.current) return;
       
       nudging.current = true;
-      element.scrollBy({ left: step, behavior: "smooth" });
+      currentIndex++;
+      
+      // Calculate exact scroll position to center the card
+      const targetScroll = currentIndex * step;
+      element.scrollTo({ left: targetScroll, behavior: "smooth" });
       
       setTimeout(() => {
         nudging.current = false;
         wrapIfNeeded();
+        
+        // Update index after wrap
+        if (element.scrollLeft < step * 2) {
+          currentIndex += team.length;
+        } else if (element.scrollLeft >= (team.length * 2) * step - step * 2) {
+          currentIndex -= team.length;
+        }
       }, 520);
     }, AUTO_ADVANCE_INTERVAL);
     
@@ -311,17 +325,36 @@ export default function Team() {
     if (autoAdvanceTimer.current) {
       clearInterval(autoAdvanceTimer.current);
       autoAdvanceTimer.current = setInterval(() => {
-        advanceToNext();
+        const element = trackRef.current;
+        if (!element) return;
+        if (paused.current) return;
+        if (nudging.current) return;
+        
+        nudging.current = true;
+        element.scrollBy({ left: step, behavior: "smooth" });
+        
+        setTimeout(() => {
+          nudging.current = false;
+          wrapIfNeeded();
+        }, 520);
       }, AUTO_ADVANCE_INTERVAL);
     }
     
     nudging.current = true;
-    el.scrollBy({ left: dir === "left" ? -step : step, behavior: "smooth" });
+    
+    // Calculate current card index
+    const currentScroll = el.scrollLeft;
+    const currentIndex = Math.round(currentScroll / step);
+    const targetIndex = dir === "left" ? currentIndex - 1 : currentIndex + 1;
+    const targetScroll = targetIndex * step;
+    
+    el.scrollTo({ left: targetScroll, behavior: "smooth" });
+    
     setTimeout(() => {
       nudging.current = false;
       wrapIfNeeded();
     }, 520);
-  }, [wrapIfNeeded, step, advanceToNext]);
+  }, [wrapIfNeeded, step]);
 
   // ── Pause/resume on hover ─────────────────────────────────────────────────
   const pause = useCallback(() => { paused.current = true; }, []);
@@ -405,7 +438,6 @@ export default function Team() {
           className="flex items-center overflow-x-auto no-scrollbar gap-[60px] md:gap-6 pb-10 pt-4"
           style={{ 
             scrollBehavior: "smooth",
-            scrollSnapType: "x mandatory",
             paddingLeft: `calc(50% - ${dim.cardW / 2}px)`,
             paddingRight: `calc(50% - ${dim.cardW / 2}px)`
           }}
@@ -417,8 +449,7 @@ export default function Team() {
               style={{ 
                 width: dim.cardW, 
                 aspectRatio: "3/4", 
-                height: dim.cardH,
-                scrollSnapAlign: "center"
+                height: dim.cardH
               }}
               initial={{ opacity: 0, scale: 0.8 }}
               whileInView={{ opacity: 1, scale: 1 }}

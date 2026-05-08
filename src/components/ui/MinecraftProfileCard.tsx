@@ -60,7 +60,11 @@ export default function MinecraftProfileCard({
       className="profile-card wood-frame mx-auto"
       style={{
         background: bgGradient,
-        boxShadow: `0 0 30px ${glowColor}22`
+        boxShadow: `0 0 30px ${glowColor}22`,
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        minHeight: '380px'
       }}
     >
       {/* Glow Border Image Frame */}
@@ -133,28 +137,89 @@ export default function MinecraftProfileCard({
         {role}
       </div>
 
-      <p className="profile-desc">
+      <p className="profile-desc" style={{ flexGrow: 1 }}>
         {description}
       </p>
 
-      {/* Social Icons Container */}
-      <div className="profile-social-container">
-        {githubUrl && (
-          <a href={githubUrl} target="_blank" rel="noopener noreferrer" className="profile-social">
-            <GithubIcon />
-          </a>
-        )}
-        {linkedinUrl && (
-          <a href={linkedinUrl} target="_blank" rel="noopener noreferrer" className="profile-social">
-            <LinkedinIcon />
-          </a>
-        )}
-        {instagramUrl && (
-          <a href={instagramUrl} target="_blank" rel="noopener noreferrer" className="profile-social">
-            <InstagramIcon />
-          </a>
-        )}
-      </div>
+      {/* Social Icons Container - Always Visible */}
+      {(githubUrl || linkedinUrl || instagramUrl) && (
+        <div className="profile-social-container" style={{ 
+          display: 'flex',
+          marginTop: 'auto',
+          paddingTop: '8px',
+          paddingBottom: '4px',
+          justifyContent: 'center',
+          gap: '8px',
+          minHeight: '32px'
+        }}>
+          {githubUrl && (
+            <a 
+              href={githubUrl} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="profile-social"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '28px',
+                height: '28px',
+                minWidth: '28px',
+                minHeight: '28px',
+                border: '2px solid rgba(0, 255, 204, 0.5)',
+                background: 'rgba(0, 0, 0, 0.5)',
+                color: '#00ffcc'
+              }}
+            >
+              <GithubIcon />
+            </a>
+          )}
+          {linkedinUrl && (
+            <a 
+              href={linkedinUrl} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="profile-social"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '28px',
+                height: '28px',
+                minWidth: '28px',
+                minHeight: '28px',
+                border: '2px solid rgba(0, 255, 204, 0.5)',
+                background: 'rgba(0, 0, 0, 0.5)',
+                color: '#00ffcc'
+              }}
+            >
+              <LinkedinIcon />
+            </a>
+          )}
+          {instagramUrl && (
+            <a 
+              href={instagramUrl} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="profile-social"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '28px',
+                height: '28px',
+                minWidth: '28px',
+                minHeight: '28px',
+                border: '2px solid rgba(0, 255, 204, 0.5)',
+                background: 'rgba(0, 0, 0, 0.5)',
+                color: '#00ffcc'
+              }}
+            >
+              <InstagramIcon />
+            </a>
+          )}
+        </div>
+      )}
     </motion.div>
   );
 }
