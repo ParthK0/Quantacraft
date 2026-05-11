@@ -12,7 +12,7 @@ export const faqData = [
   },
   {
     q: "What is the team size?",
-    a: "Teams of 2–4 members. Solo participation not allowed.",
+    a: "Teams of 1–3 members.",
   },
   {
     q: "Is there a registration fee?",
