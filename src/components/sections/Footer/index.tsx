@@ -39,7 +39,7 @@ export default function Footer() {
             <span key={i} className="font-minecraft text-[10px] text-white tracking-[1px] flex items-center gap-8 mx-4">
               <span>QUANTA CRAFT 1.0 IS HERE!</span>
               <span className="text-[#88eeff]">~</span>
-              <span>MAY 25-26</span>
+              <span>MAY 27-28</span>
               <span className="text-[#88eeff]">~</span>
               <span>24 HOURS OF BUILDING</span>
               <span className="text-[#88eeff]">~</span>

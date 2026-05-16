@@ -10,29 +10,29 @@ const events = [
     alt: "MAY 07: Registration Starts",
   },
   { 
-    id: "15may",
-    imageSrc: "/assets/timeline/15may1.png",
-    alt: "MAY 15: PPT Submission",
-  },
-  { 
     id: "20may",
     imageSrc: "/assets/timeline/20may1.png",
-    alt: "MAY 20: Final Deadline",
-  },
-  { 
-    id: "22may",
-    imageSrc: "/assets/timeline/22may1.png",
-    alt: "MAY 22: Trae Session",
+    alt: "MAY 20: PPT Submission",
   },
   { 
     id: "23may",
     imageSrc: "/assets/timeline/23May1.png",
-    alt: "MAY 23: PPT Evaluation",
+    alt: "MAY 23: Final Deadline",
   },
   { 
-    id: "25-26may",
+    id: "24may",
+    imageSrc: "/assets/timeline/22may1.png",
+    alt: "MAY 24: Trae Session",
+  },
+  { 
+    id: "25may",
+    imageSrc: "/assets/timeline/23May1.png",
+    alt: "MAY 25: PPT Evaluation",
+  },
+  { 
+    id: "27-28may",
     imageSrc: "/assets/timeline/25-26may.png",
-    alt: "MAY 25-26: The End Fight",
+    alt: "MAY 27-28: The End Fight",
   },
 ];
 

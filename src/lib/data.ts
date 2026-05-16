@@ -19,8 +19,8 @@ export const faqData = [
     a: "No. QuantCraft is completely free to participate in.",
   },
   {
-    q: "What do I need to submit?",
-    a: "A PPT by May 15, followed by the final project by May 20.",
+    q: "What is the last date for ppt submission",
+    a: "PPT should be submitted by 20th may ",
   },
   {
     q: "Will accommodation be provided?",
